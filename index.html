@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Sweepy">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Sweepy - Family Cleaning App</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            max-width: 100vw;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        
+        .date {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .content {
+            padding: 24px 16px;
+        }
+        
+        .progress-card {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .progress-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .progress-stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .progress-number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        @media (min-width: 768px) {
+            .rooms-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .room-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .room-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .cleanliness-score {
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background-color: #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+        
+        .tasks-list {
+            margin-top: 12px;
+        }
+        
+        .task-item {
+            background: #f3f4f6;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            font-size: 12px;
+        }
+        
+        .task-preview {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        
+        .daily-tasks {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .task-card {
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .task-card.completed {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+        
+        .task-card:not(.completed):hover {
+            border-color: #bfdbfe;
+        }
+        
+        .task-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .task-checkbox.checked {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+        
+        .task-info h3 {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .task-info.completed h3 {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+        
+        .task-meta {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .task-points {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .points-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2563eb;
+        }
+        
+        .stars {
+            display: flex;
+        }
+        
+        .leaderboard {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .member-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .member-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .member-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .rank-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .rank-1 { background: #f59e0b; }
+        .rank-2 { background: #9ca3af; }
+        .rank-3 { background: #f97316; }
+        .rank-other { background: #d1d5db; color: #6b7280; }
+        
+        .member-info h3 {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        
+        .member-role {
+            font-size: 14px;
+            color: #6b7280;
+            text-transform: capitalize;
+        }
+        
+        .member-stats {
+            text-align: right;
+        }
+        
+        .member-points {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        
+        .points-label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .streak {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #f97316;
+            margin-top: 4px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-secondary {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+        
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+        
+        .btn-full {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 8px 16px;
+            z-index: 50;
+        }
+        
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #6b7280;
+        }
+        
+        .nav-item.active {
+            color: #2563eb;
+            background: #eff6ff;
+        }
+        
+        .nav-item:hover {
+            color: #2563eb;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 60;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .text-green { color: #10b981; }
+        .text-yellow { color: #f59e0b; }
+        .text-red { color: #ef4444; }
+        
+        .bg-green { background: #10b981; }
+        .bg-yellow { background: #f59e0b; }
+        .bg-red { background: #ef4444; }
+        
+        .no-tasks {
+            text-align: center;
+            padding: 32px;
+            color: #6b7280;
+        }
+        
+        /* iOS specific styles */
+        @supports (-webkit-touch-callout: none) {
+            .container {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: calc(80px + env(safe-area-inset-bottom));
+            }
+            
+            .bottom-nav {
+                padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1 class="logo">Sweepy</h1>
+                <div class="date" id="currentDate"></div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div id="homeTab">
+                <div class="progress-card">
+                    <h2 class="progress-title">Today's Progress</h2>
+                    <div class="progress-stats">
+                        <div class="progress-number" id="progressCount">0/0</div>
+                        <div>Tasks completed</div>
+                    </div>
+                </div>
+
+                <div class="rooms-grid" id="roomsGrid"></div>
+
+                <button class="btn btn-primary btn-full" onclick="showAddRoom()">
+                    <span>➕</span>
+                    <span>Add New Room</span>
+                </button>
+            </div>
+
+            <div id="tasksTab" class="hidden">
+                <div class="daily-tasks">
+                    <h2 class="section-title">
+                        <span>📅</span>
+                        Today's Tasks
+                    </h2>
+                    <div id="dailyTasksList"></div>
+                </div>
+
+                <div class="daily-tasks">
+                    <h3 class="section-title">All Rooms & Tasks</h3>
+                    <div id="allTasksList"></div>
+                </div>
+            </div>
+
+            <div id="familyTab" class="hidden">
+                <div class="leaderboard">
+                    <h2 class="section-title">
+                        <span>🏆</span>
+                        Family Leaderboard
+                    </h2>
+                    <p style="color: rgba(255,255,255,0.8);">Compete and earn points for completed tasks!</p>
+                </div>
+
+                <div id="leaderboardList"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-items">
+                <div class="nav-item active" onclick="switchTab('home')">
+                    <span>🏠</span>
+                    <span class="nav-label">Home</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('tasks')">
+                    <span>📅</span>
+                    <span class="nav-label">Tasks</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('family')">
+                    <span>👥</span>
+                    <span class="nav-label">Family</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Room Modal -->
+    <div id="addRoomModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 class="modal-title">Add New Room</h3>
+            <div class="form-group">
+                <input type="text" id="newRoomName" class="form-input" placeholder="Room name" />
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="hideAddRoom()">Cancel</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="addRoom()">Add Room</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 class="modal-title">Add Task to <span id="selectedRoomName"></span></h3>
+            
+            <div class="form-group">
+                <input type="text" id="newTaskName" class="form-input" placeholder="Task name" />
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Points (1-3)</label>
+                <select id="newTaskPoints" class="form-select">
+                    <option value="1">1 point - Easy task</option>
+                    <option value="2">2 points - Medium task</option>
+                    <option value="3">3 points - Hard task</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Frequency</label>
+                <select id="newTaskFrequency" class="form-select">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Assign to</label>
+                <select id="newTaskAssigned" class="form-select"></select>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="hideAddTask()">Cancel</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="addTask()">Add Task</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        let currentTab = 'home';
+        let selectedRoom = null;
+        
+        let rooms = [
+            { 
+                id: 1, 
+                name: 'Kitchen', 
+                cleanliness: 85,
+                tasks: [
+                    { id: 1, name: 'Clean countertops', points: 2, frequency: 'daily', lastDone: null, assigned: 'Mom' },
+                    { id: 2, name: 'Wash dishes', points: 2, frequency: 'daily', lastDone: null, assigned: 'Dad' },
+                    { id: 3, name: 'Clean stovetop', points: 1, frequency: 'weekly', lastDone: null, assigned: 'Teen' },
+                    { id: 4, name: 'Mop floor', points: 3, frequency: 'weekly', lastDone: null, assigned: 'Mom' }
+                ]
+            },
+            { 
+                id: 2, 
+                name: 'Living Room', 
+                cleanliness: 72,
+                tasks: [
+                    { id: 5, name: 'Vacuum carpet', points: 3, frequency: 'weekly', lastDone: null, assigned: 'Dad' },
+                    { id: 6, name: 'Dust surfaces', points: 1, frequency: 'weekly', lastDone: null, assigned: 'Teen' },
+                    { id: 7, name: 'Organize magazines', points: 1, frequency: 'daily', lastDone: null, assigned: 'Teen' }
+                ]
+            },
+            { 
+                id: 3, 
+                name: 'Bathroom', 
+                cleanliness: 60,
+                tasks: [
+                    { id: 8, name: 'Clean toilet', points: 3, frequency: 'weekly', lastDone: null, assigned: 'Mom' },
+                    { id: 9, name: 'Clean shower', points: 3, frequency: 'weekly', lastDone: null, assigned: 'Dad' },
+                    { id: 10, name: 'Clean sink', points: 2, frequency: 'weekly', lastDone: null, assigned: 'Teen' }
+                ]
+            }
+        ];
+
+        let familyMembers = [
+            { id: 1, name: 'Mom', points: 125, streak: 7, role: 'parent' },
+            { id: 2, name: 'Dad', points: 98, streak: 5, role: 'parent' },
+            { id: 3, name: 'Teen', points: 67, streak: 3, role: 'child' }
+        ];
+
+        let dailyTasks = [];
+
+        // Initialize app
+        function init() {
+            loadData();
+            updateDate();
+            generateDailyTasks();
+            renderAll();
+        }
+
+        function updateDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function generateDailyTasks() {
+            const today = new Date().toDateString();
+            dailyTasks = [];
+            
+            rooms.forEach(room => {
+                room.tasks.forEach(task => {
+                    if (task.frequency === 'daily' || 
+                       (task.frequency === 'weekly' && new Date().getDay() === 1) || 
+                       !task.lastDone || task.lastDone !== today) {
+                        dailyTasks.push({
+                            ...task,
+                            roomName: room.name,
+                            roomId: room.id,
+                            completed: task.lastDone === today
+                        });
+                    }
+                });
+            });
+        }
+
+        function switchTab(tab) {
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Hide all tabs
+            document.getElementById('homeTab').classList.add('hidden');
+            document.getElementById('tasksTab').classList.add('hidden');
+            document.getElementById('familyTab').classList.add('hidden');
+            
+            // Show selected tab
+            document.getElementById(tab + 'Tab').classList.remove('hidden');
+            currentTab = tab;
+        }
+
+        function renderAll() {
+            renderHome();
+            renderTasks();
+            renderFamily();
+        }
+
+        function renderHome() {
+            // Update progress
+            const completed = dailyTasks.filter(t => t.completed).length;
+            const total = dailyTasks.length;
+            document.getElementById('progressCount').textContent = `${completed}/${total}`;
+            
+            // Render rooms
+            const grid = document.getElementById('roomsGrid');
+            grid.innerHTML = '';
+            
+            rooms.forEach(room => {
+                const roomCard = document.createElement('div');
+                roomCard.className = 'room-card';
+                
+                const cleanlinessColor = room.cleanliness >= 80 ? 'text-green' : 
+                                       room.cleanliness >= 60 ? 'text-yellow' : 'text-red';
+                const progressColor = room.cleanliness >= 80 ? 'bg-green' : 
+                                    room.cleanliness >= 60 ? 'bg-yellow' : 'bg-red';
+                
+                const message = room.cleanliness >= 90 ? 'Sparkling clean!' :
+                              room.cleanliness >= 80 ? 'Very clean' :
+                              room.cleanliness >= 70 ? 'Pretty clean' :
+                              room.cleanliness >= 60 ? 'Needs attention' :
+                              room.cleanliness >= 40 ? 'Getting messy' : "What's that smell?";
+                
+                roomCard.innerHTML = `
+                    <div class="room-header">
+                        <h3 class="room-name">${room.name}</h3>
+                        <div class="cleanliness-score ${cleanlinessColor}">${room.cleanliness}%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${progressColor}" style="width: ${room.cleanliness}%"></div>
+                    </div>
+                    <p class="task-preview ${cleanlinessColor}">${message}</p>
+                    <div class="tasks-list">
+                        <p style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Pending tasks:</p>
+                        ${room.tasks.slice(0, 2).map(task => 
+                            `<div class="task-item">${task.name} (${task.points} pts)</div>`
+                        ).join('')}
+                        ${room.tasks.length > 2 ? `<div class="task-preview">+${room.tasks.length - 2} more...</div>` : ''}
+                    </div>
+                `;
+                
+                grid.appendChild(roomCard);
+            });
+        }
+
+        function renderTasks() {
+            // Render daily tasks
+            const dailyList = document.getElementById('dailyTasksList');
+            
+            if (dailyTasks.length === 0) {
+                dailyList.innerHTML = '<div class="no-tasks">All caught up! No tasks for today.</div>';
+            } else {
+                dailyList.innerHTML = dailyTasks.map(task => `
+                    <div class="task-card ${task.completed ? 'completed' : ''}" onclick="completeTask(${task.id})">
+                        <div class="task-content">
+                            <div class="task-left">
+                                <div class="task-checkbox ${task.completed ? 'checked' : ''}">
+                                    ${task.completed ? '✓' : ''}
+                                </div>
+                                <div class="task-info ${task.completed ? 'completed' : ''}">
+                                    <h3>${task.name}</h3>
+                                    <div class="task-meta">${task.roomName} • Assigned to ${task.assigned}</div>
+                                </div>
+                            </div>
+                            <div class="task-points">
+                                <span class="points-text">${task.points} ${task.points === 1 ? 'pt' : 'pts'}</span>
+                                <div class="stars">
+                                    ${'⭐'.repeat(task.points)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Render all tasks by room
+            const allList = document.getElementById('allTasksList');
+            allList.innerHTML = rooms.map(room => `
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="font-weight: 500;">${room.name}</h4>
+                        <button class="btn" style="padding: 4px 8px; font-size: 14px; background: none; color: #3b82f6;" onclick="showAddTask(${room.id})">Add Task</button>
+                    </div>
+                    <div style="margin-left: 16px;">
+                        ${room.tasks.map(task => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f9fafb; border-radius: 6px; margin-bottom: 4px;">
+                                <span style="font-size: 14px;">${task.name}</span>
+                                <div style="display: flex; gap: 8px; font-size: 12px; color: #6b7280;">
+                                    <span>${task.frequency}</span>
+                                    <span>${task.points} pts</span>
+                                    <span>${task.assigned}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFamily() {
+            const sortedMembers = [...familyMembers].sort((a, b) => b.points - a.points);
+            const list = document.getElementById('leaderboardList');
+            
+            list.innerHTML = sortedMembers.map((member, index) => {
+                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-other';
+                
+                return `
+                    <div class="member-card">
+                        <div class="member-content">
+                            <div class="member-left">
+                                <div class="rank-badge ${rankClass}">${index + 1}</div>
+                                <div class="member-info">
+                                    <h3>${member.name}</h3>
+                                    <div class="member-role">${member.role}</div>
+                                </div>
+                            </div>
+                            <div class="member-stats">
+                                <div class="member-points">${member.points}</div>
+                                <div class="points-label">points</div>
+                                <div class="streak">
+                                    🎯 ${member.streak} day streak
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function completeTask(taskId) {
+            const today = new Date().toDateString();
+            
+            // Update daily tasks
+            const dailyTaskIndex = dailyTasks.findIndex(t => t.id === taskId);
+            if (dailyTaskIndex >= 0) {
+                dailyTasks[dailyTaskIndex].completed = true;
+            }
+            
+            // Update rooms
+            rooms.forEach(room => {
+                const taskIndex = room.tasks.findIndex(t => t.id === taskId);
+                if (taskIndex >= 0) {
+                    room.tasks[taskIndex].lastDone = today;
+                    room.cleanliness = Math.min(room.cleanliness + 5, 100);
+                }
+            });
+            
+            // Update family member points
+            const task = dailyTasks.find(t => t.id === taskId);
+            if (task) {
+                const memberIndex = familyMembers.findIndex(m => m.name === task.assigned);
+                if (memberIndex >= 0) {
+                    familyMembers[memberIndex].points += task.points;
+                    familyMembers[memberIndex].streak += 1;
+                }
+            }
+            
+            saveData();
+            renderAll();
+        }
+
+        function showAddRoom() {
+            document.getElementById('addRoomModal').classList.remove('hidden');
+            document.getElementById('newRoomName').focus();
+        }
+
+        function hideAddRoom() {
+            document.getElementById('addRoomModal').classList.add('hidden');
+            document.getElementById('newRoomName').value = '';
+        }
+
+        function addRoom() {
+            const name = document.getElementById('newRoomName').value.trim();
+            if (name) {
+                const newRoom = {
+                    id: Date.now(),
+                    name: name,
+                    cleanliness: 100,
+                    tasks: []
+                };
+                rooms.push(newRoom);
+                hideAddRoom();
+                saveData();
+                renderAll();
+            }
+        }
+
+        function showAddTask(roomId) {
+            selectedRoom = rooms.find(r => r.id === roomId);
+            if (selectedRoom) {
+                document.getElementById('selectedRoomName').textContent = selectedRoom.name;
+                
+                // Populate family members dropdown
+                const select = document.getElementById('newTaskAssigned');
+                select.innerHTML = familyMembers.map(member => 
+                    `<option value="${member.name}">${member.name}</option>`
+                ).join('');
+                
+                document.getElementById('addTaskModal').classList.remove('hidden');
+                document.getElementById('newTaskName').focus();
+            }
+        }
+
+        function hideAddTask() {
+            document.getElementById('addTaskModal').classList.add('hidden');
+            document.getElementById('newTaskName').value = '';
+            selectedRoom = null;
+        }
+
+        function addTask() {
+            const name = document.getElementById('newTaskName').value.trim();
+            const points = parseInt(document.getElementById('newTaskPoints').value);
+            const frequency = document.getElementById('newTaskFrequency').value;
+            const assigned = document.getElementById('newTaskAssigned').value;
+            
+            if (name && selectedRoom) {
+                const newTask = {
+                    id: Date.now(),
+                    name: name,
+                    points: points,
+                    frequency: frequency,
+                    assigned: assigned,
+                    lastDone: null
+                };
+                
+                selectedRoom.tasks.push(newTask);
+                hideAddTask();
+                generateDailyTasks();
+                saveData();
+                renderAll();
+            }
+        }
+
+        function saveData() {
+            try {
+                const data = {
+                    rooms: rooms,
+                    familyMembers: familyMembers,
+                    lastSave: new Date().toISOString()
+                };
+                localStorage.setItem('sweepyData', JSON.stringify(data));
+            } catch (e) {
+                console.log('Unable to save data');
+            }
+        }
+
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('sweepyData');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.rooms) rooms = data.rooms;
+                    if (data.familyMembers) familyMembers = data.familyMembers;
+                }
+            } catch (e) {
+                console.log('Unable to load data');
+            }
+        }
+
+        // Handle modal clicks
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                if (e.target.id === 'addRoomModal') hideAddRoom();
+                if (e.target.id === 'addTaskModal') hideAddTask();
+            }
+        });
+
+        // Handle keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hideAddRoom();
+                hideAddTask();
+            }
+            if (e.key === 'Enter') {
+                if (!document.getElementById('addRoomModal').classList.contains('hidden')) {
+                    addRoom();
+                }
+                if (!document.getElementById('addTaskModal').classList.contains('hidden')) {
+                    addTask();
+                }
+            }
+        });
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Auto-save every 30 seconds
+        setInterval(saveData, 30000);
+    </script>
+</body>
+</html>
